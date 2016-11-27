@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/tamanugi/site-capture-bot/issues"
   },
-  "homepage": "https://github.com/tamanugi/site-capture-bot#readme"
+  "homepage": "https://github.com/tamanugi/site-capture-bot#readme",
+  "dependencies": {
+    "botkit": "^0.4.2"
+  }
 }
