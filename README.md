@@ -12,4 +12,4 @@ export token=<your slack token> node bot.js
 ```
 
 ## Demo
-
+![demo](demo.gif)
