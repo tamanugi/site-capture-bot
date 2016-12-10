@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/tamanugi/site-capture-bot#readme",
   "dependencies": {
-    "botkit": "^0.4.2"
+    "botkit": "^0.4.2",
+    "nightmare": "^2.8.1"
   }
 }
