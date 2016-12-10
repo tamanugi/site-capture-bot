@@ -4,10 +4,11 @@ if (!process.env.token) {
 }
 
 var Botkit = require('botkit');
-var os = require('os');
+let capture = require('./lib/NightmareCapture')
+let fs = require('fs')
 
 var controller = Botkit.slackbot({
-    debug: true,
+    debug: false,
 });
 
 var bot = controller.spawn({
@@ -15,8 +16,9 @@ var bot = controller.spawn({
 }).startRTM();
 
 
-controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function(bot, message) {
+controller.hears(['capture <(https?://.*)>'], 'direct_message,direct_mention,mention', function(bot, message) {
 
+    // reaction robot face
     bot.api.reactions.add({
         timestamp: message.ts,
         channel: message.channel,
@@ -27,12 +29,41 @@ controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', funct
         }
     });
 
+    // url extract
+    let url = message.match[1] + ''
 
-    controller.storage.users.get(message.user, function(err, user) {
-        if (user && user.name) {
-            bot.reply(message, 'Hello ' + user.name + '!!');
-        } else {
-            bot.reply(message, 'Hello.');
+    let callback = () => {
+      const messageObj = {
+        file: fs.createReadStream('./screenshot.png'),
+        filename: 'screenshot.png',
+        title: 'screenshot.png',
+        channels: message.channel
+      };
+
+      // post screenshot.png to slack
+      bot.api.files.upload(messageObj, function(err, res){
+        if(err){
+            console.log(err);
         }
-    });
+      });
+
+      // remove screenshot.png
+      fs.unlink('./screenshot.png', function (err) {
+        if (err) throw err;
+        console.log('successfully deleted');
+      });
+
+      // reaction check mark
+      bot.api.reactions.add({
+          timestamp: message.ts,
+          channel: message.channel,
+          name: 'heavy_check_mark',
+      }, function(err, res) {
+          if (err) {
+              bot.botkit.log('Failed to add emoji reaction :(', err);
+          }
+      });
+    }
+    capture(url, callback)
+
 });
